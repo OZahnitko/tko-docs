@@ -1,4 +1,16 @@
-import { existsSync, lstatSync, mkdirSync, readdirSync, unlinkSync } from "fs";
+// TODO: Scan for all the links in the documents.
+/*
+Links will be inside of the file object the first time that I read them.
+ */
+
+import {
+  appendFileSync,
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readdirSync,
+  unlinkSync,
+} from "fs";
 import { resolve } from "path";
 
 import { readFilePromise, writeFilePromise } from "./utils";
@@ -38,11 +50,25 @@ const READMEs = FILES.filter((file) => file.match(/.*README.*\.md/g));
 
 const writeFiles = async (files: string[]) => {
   const filesData: file[] = await Promise.all(
-    files.map(async (file) => ({
-      content: (await readFilePromise(file)).toString(),
-      filePath: file,
-      name: file.split("/").slice(4).join("."),
-    }))
+    files.map(async (file) => {
+      const content = (await readFilePromise(file)).toString();
+
+      const links = content.match(/\[.*?\]\(.*?\)/g);
+
+      return {
+        content,
+        filePath: file,
+        links:
+          links?.map((link) => {
+            const label = link.split("](")[0].slice(1);
+            const url = link
+              .split("](")[1]
+              .slice(0, link.split("](")[1].length - 1);
+            return { label, url };
+          }) || [],
+        name: file.split("/").slice(4).join("."),
+      };
+    })
   );
 
   if (!existsSync(resolve(__dirname, "../docs")))
@@ -52,13 +78,19 @@ const writeFiles = async (files: string[]) => {
     unlinkSync(resolve(__dirname, "../docs", file));
   });
 
-  filesData.forEach(
-    async (file) =>
-      await writeFilePromise(
-        resolve(__dirname, "../docs", file.name),
-        file.content
-      )
-  );
+  filesData.forEach(async (file) => {
+    await writeFilePromise(
+      resolve(__dirname, "../docs", file.name),
+      file.content
+    );
+    // TODO: Figure out better formatting for the links.
+    // TODO: Maybe also track the files that the link came from.
+    file.links.length &&
+      appendFileSync(
+        resolve(__dirname, "../docs/links.md"),
+        JSON.stringify(file.links)
+      );
+  });
 };
 
 writeFiles(READMEs);
