@@ -4,7 +4,7 @@ Making docs for all the projects that I have started..
 
 ```
 $HOME
-|- bin
+|- ✅ bin
 |- documentation
 | - call-to-action
 | - dynamic_terraform_blocks
@@ -41,7 +41,7 @@ $HOME
 | - multi-22-client
 | - multi-22-infrastructure
 | - tks
-| | - tks-exercise-tracker-client -->
+| | - 🔃 tks-exercise-tracker-client
 | - tks-extension
 |- tmp
 | - bucc
