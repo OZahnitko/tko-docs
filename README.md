@@ -41,6 +41,7 @@ $HOME
 | - multi-22-client
 | - multi-22-infrastructure
 | - tks
+| | - tks-exercise-tracker-client -->
 | - tks-extension
 |- tmp
 | - bucc
