@@ -34,6 +34,7 @@ $HOME
 | - test
 | - ting-ting-monorepo
 | - tks-monorepo
+| |- 🔃 tks-component-library
 | - turknkey-niches
 |- srs
 | - follow-along
